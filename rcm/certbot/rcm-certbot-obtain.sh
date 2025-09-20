@@ -60,18 +60,6 @@ printHelp() {
     cat << EOF
 Usage: rcm-certbot-obtain [options]
 
-Options:
-   --domain *
-        Set the domain. Multivalue.
-   --certificate-name
-        Use the existing certificate name that issued by Let's encrypt or set a
-        new name of certificate that to be obtained.
-   --email
-        Email contact of certbot account.
-   --dns-plugin
-        Select how to authenticate domain.
-        Values available from command: rcm-plugin(list --interface=certbot_dns).
-
 Global Options.
    --fast
         No delay every subtask.
@@ -79,6 +67,20 @@ Global Options.
         Print version of this script.
    --help
         Show this help.
+
+Options:
+   --domain *
+        Set the domain. Multivalue.
+   --certificate-name
+        Use the existing certificate name that issued by Let's encrypt or set a
+        new name of certificate that to be obtained.
+        Prepopulate value from variable CERTIFICATE_NAME.
+        Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
+   --dns-plugin
+        Select how to authenticate domain.
+        Values available from command: rcm-plugin(list --interface=certbot_dns).
+   --email
+        Email contact of certbot account.
 
 RCM Config:
    --no-timer
@@ -90,6 +92,87 @@ EOF
 [ -n "$help" ] && { printHelp; exit 1; }
 [ -n "$version" ] && { printVersion; exit 1; }
 
+# Title.
+title rcm-certbot-obtain
+____
+
+[ "$EUID" -ne 0 ] && { error This script needs to be run with superuser privileges.; x; }
+
+# Dependency.
+while IFS= read -r line; do
+    [[ -z "$line" ]] || command -v `cut -d: -f1 <<< "${line}"` >/dev/null || { error Unable to proceed, command not found: '`'`cut -d: -f1 <<< "${line}"`'`'.; x; }
+done <<< `printHelp 2>/dev/null | sed -n '/^Dependency:/,$p' | sed -n '2,/^\s*$/p' | sed 's/^ *//g'`
+
+# Require, validate, and populate value.
+chapter Dump variable.
+[ -n "$fast" ] && isfast=' --fast' || isfast=''
+if [[ "${#domain[@]}" -eq 0 ]];then
+    error Argument --domain is required.; x
+fi
+is_domain_array=()
+e; magenta 'domain=('
+first=1
+for each in "${domain[@]}";do
+    if [ -n "$first" ];then
+        magenta "'""$each""'"; first=
+    else
+        magenta " '""$each""'";
+    fi
+    is_domain_array+=("--domain=${each}")
+done
+magenta ')'; _.
+code 'certificate_name="'$certificate_name'"'
+[ -n "$certificate_name" ] && is_certificate_name=" --cert-name=${certificate_name}" || is_certificate_name=
+[ -n "$email" ] && is_email=" --email=${email}" || is_email=
+code 'email="'$email'"'
+code 'dns_plugin="'$dns_plugin'"'
+tempfile=
+____
+
+append_arguments=()
+if [ -n "$dns_plugin" ];then
+    [ -z "$tempfile" ] && tempfile=$(mktemp -p /dev/shm -t rcm-certbot-obtain.XXXXXX)
+    INDENT+='    ' \
+    rcm-plugin $isfast execute --interface=certbot_dns --name="$dns_plugin" \
+        --method='append-arguments' \
+        --output-file="$tempfile" \
+        ; [ ! $? -eq 0 ] && x
+    if [ -s "$tempfile" ];then
+        while IFS= read -r line; do
+            append_arguments+=("$line")
+        done < "$tempfile"
+    fi
+fi
+
+chapter Obtain Certificate.
+if [ -z "$tempfile" ];then
+    tempfile=$(mktemp -p /dev/shm -t rcm-certbot-obtain-authenticator-digitalocean.XXXXXX)
+fi
+# https://eff-certbot.readthedocs.io/en/latest/using.html#combination
+msg='Another instance of Certbot is already running.'
+if [ "${#append_arguments[@]}" -gt 0 ];then
+    set -- "${append_arguments[@]}"
+fi
+unset append_arguments
+while true; do
+    code certbot -v certonly"$is_certificate_name""$is_email" --non-interactive --agree-tos \
+        "${is_domain_array[@]}" \
+        "$@"
+    certbot -v certonly $is_certificate_name $is_email --non-interactive --agree-tos \
+        "${is_domain_array[@]}" \
+        "$@" | tee "$tempfile"
+    if [[ $(head -1 "$tempfile") == "$msg" ]];then
+        e Retrying...; _.
+        code sleep 3
+        sleep 3
+    else
+        break
+    fi
+done
+____
+
+[ -n "$tempfile" ] && rm "$tempfile"
+____
 # parse-options.sh \
 # --without-end-options-double-dash \
 # --compact \
