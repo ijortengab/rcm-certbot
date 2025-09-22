@@ -93,7 +93,7 @@ fi
 
 # Functions.
 printVersion() {
-    echo '0.9.22'
+    echo '0.1.2'
 }
 printHelp() {
     title ISPConfig Setup
