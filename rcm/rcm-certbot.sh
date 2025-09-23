@@ -49,6 +49,24 @@ printHelp() {
     _ 'Variation '; yellow Default; _.
     _ 'Version '; yellow `printVersion`; _.
     _.
+    cat << EOF
+Usage: rcm-certbot [options]
+
+Global Options.
+   --fast
+        No delay every subtask.
+   --version
+        Print version of this script.
+   --help
+        Show this help.
+
+Download:
+   [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
+
+Post Install:
+   rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
+   rcm-install(certbot-tls-plugin `printVersion` --source=certbot)
+EOF
 }
 
 # Help and Version.
