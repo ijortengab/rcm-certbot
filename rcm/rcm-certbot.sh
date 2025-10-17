@@ -60,12 +60,19 @@ Global Options.
    --help
         Show this help.
 
+Dependency:
+   rcm:0.18.0-alpha.3
+
 Download:
    [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
 
 Post Install:
    rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
    rcm-install(certbot-tls-plugin `printVersion` --source=certbot)
+
+RCM Config:
+   --no-timer
+   --no-confirmation
 EOF
 }
 
@@ -73,13 +80,16 @@ EOF
 [ -n "$help" ] && { printHelp; exit 1; }
 [ -n "$version" ] && { printVersion; exit 1; }
 
+exit 0
+
 # parse-options.sh \
+# --with-end-options-specific-operand \
+# --with-end-options-double-dash \
 # --compact \
 # --clean \
 # --no-hash-bang \
 # --no-original-arguments \
 # --no-error-invalid-options \
-# --with-end-options-double-dash \
 # --no-error-require-arguments << EOF | clip
 # INCREMENT=(
 # )
@@ -95,6 +105,8 @@ EOF
 # FLAG_VALUE=(
 # )
 # CSV=(
+# )
+# OPERAND=(
 # )
 # EOF
 # clear
