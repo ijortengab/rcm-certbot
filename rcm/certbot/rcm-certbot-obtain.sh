@@ -27,10 +27,10 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --help) help=1; shift ;;
         --version) version=1; shift ;;
+        --authenticator-plugin=*) authenticator_plugin="${1#*=}"; shift ;;
+        --authenticator-plugin) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then authenticator_plugin="$2"; shift; fi; shift ;;
         --certificate-name=*) certificate_name="${1#*=}"; shift ;;
         --certificate-name) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then certificate_name="$2"; shift; fi; shift ;;
-        --dns-plugin=*) dns_plugin="${1#*=}"; shift ;;
-        --dns-plugin) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then dns_plugin="$2"; shift; fi; shift ;;
         --domain=*) domain+=("${1#*=}"); shift ;;
         --domain) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then domain+=("$2"); shift; fi; shift ;;
         --email=*) email="${1#*=}"; shift ;;
@@ -76,9 +76,9 @@ Options:
         new name of certificate that to be obtained.
         Prepopulate value from variable CERTIFICATE_NAME.
         Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
-   --dns-plugin
+   --authenticator-plugin *
         Select how to authenticate domain.
-        Values available from command: rcm-plugin(list --interface=certbot_dns).
+        Values available from command: rcm-plugin(list --interface=certbot_authenticator).
    --email
         Email contact of certbot account.
 
@@ -125,23 +125,24 @@ code 'certificate_name="'$certificate_name'"'
 [ -n "$certificate_name" ] && is_certificate_name=" --cert-name=${certificate_name}" || is_certificate_name=
 [ -n "$email" ] && is_email=" --email=${email}" || is_email=
 code 'email="'$email'"'
-code 'dns_plugin="'$dns_plugin'"'
+code 'authenticator_plugin="'$authenticator_plugin'"'
+# Cleaning environment variable from rcm.
+[ "$authenticator_plugin" == - ] && authenticator_plugin=
+code 'authenticator_plugin="'$authenticator_plugin'"'
 tempfile=
 ____
 
 append_arguments=()
-if [ -n "$dns_plugin" ];then
-    [ -z "$tempfile" ] && tempfile=$(mktemp -p /dev/shm -t rcm-certbot-obtain.XXXXXX)
-    INDENT+='    ' \
-    rcm-plugin $isfast execute --interface=certbot_dns --name="$dns_plugin" \
-        --method='append-arguments' \
-        --output-file="$tempfile" \
-        ; [ ! $? -eq 0 ] && x
-    if [ -s "$tempfile" ];then
-        while IFS= read -r line; do
-            append_arguments+=("$line")
-        done < "$tempfile"
-    fi
+[ -z "$tempfile" ] && tempfile=$(mktemp -p /dev/shm -t rcm-certbot-obtain.XXXXXX)
+INDENT+='    ' \
+rcm-plugin $isfast execute --interface=certbot_authenticator --name="$authenticator_plugin" \
+    --method='append_arguments' \
+    --output-file="$tempfile" \
+    ; [ ! $? -eq 0 ] && x
+if [ -s "$tempfile" ];then
+    while IFS= read -r line; do
+        append_arguments+=("$line")
+    done < "$tempfile"
 fi
 
 chapter Obtain Certificate.
@@ -173,6 +174,9 @@ ____
 
 [ -n "$tempfile" ] && rm "$tempfile"
 ____
+
+exit 0
+
 # parse-options.sh \
 # --without-end-options-double-dash \
 # --compact \
@@ -189,7 +193,7 @@ ____
 # VALUE=(
 # --certificate-name
 # --email
-# --dns-plugin
+# --authenticator-plugin
 # )
 # MULTIVALUE=(
 # --domain
