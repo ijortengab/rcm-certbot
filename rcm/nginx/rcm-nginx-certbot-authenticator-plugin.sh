@@ -73,7 +73,7 @@ fi
 
 # Functions. Help and Version.
 printVersion() {
-    echo '0.1.2'
+    echo '0.1.3-alpha.1'
 }
 printHelp() {
     title RCM Certbot Authenticator Plugin
