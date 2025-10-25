@@ -40,7 +40,7 @@ RCM_INDENT='    '; [ "$(tput cols)" -le 80 ] && RCM_INDENT='  '
 
 # Functions.
 printVersion() {
-    echo '0.1.3-alpha.3'
+    echo '0.1.3-alpha.4'
 }
 printHelp() {
     title RCM Certbot Autoinstaller
