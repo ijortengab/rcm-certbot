@@ -142,6 +142,7 @@ Post Install:
    rcm-install(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
 
 Post Update:
+   rcm-plugin(add --interface=certbot_authenticator --name=nginx --command=rcm-nginx-certbot-authenticator-plugin --version=`printVersion`)
    rcm-update(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
 
 RCM Config:
