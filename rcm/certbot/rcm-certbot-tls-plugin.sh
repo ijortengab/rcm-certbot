@@ -125,6 +125,7 @@ Global Options.
         Show this help.
 
 Download:
+   [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
    [rcm-certbot-apt](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-apt.sh)
    [rcm-certbot-obtain](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-obtain.sh)
    [rcm-nginx-certbot-authenticator-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/nginx/rcm-nginx-certbot-authenticator-plugin.sh)
@@ -137,8 +138,11 @@ Pre Prompt:
    rcm-plugin(init --interface=certbot_authenticator)
 
 Post Install:
-   rcm-plugin(add --interface=certbot_authenticator --name=nginx --command=rcm-nginx-certbot --version=`printVersion`)
+   rcm-plugin(add --interface=certbot_authenticator --name=nginx --command=rcm-nginx-certbot-authenticator-plugin --version=`printVersion`)
    rcm-install(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
+
+Post Update:
+   rcm-update(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
 
 RCM Config:
    --no-timer
