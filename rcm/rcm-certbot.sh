@@ -61,14 +61,18 @@ Global Options.
         Show this help.
 
 Dependency:
-   rcm:0.18.0-alpha.3
+   rcm:0.18.0-alpha.4
 
 Download:
+   [rcm-certbot](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/rcm-certbot.sh)
    [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
 
 Post Install:
    rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
    rcm-install(certbot-tls-plugin `printVersion` --source=certbot)
+
+Post Update:
+   rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
 
 RCM Config:
    --no-timer
