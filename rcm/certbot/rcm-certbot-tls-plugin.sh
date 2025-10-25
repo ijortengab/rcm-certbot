@@ -95,7 +95,7 @@ fi
 
 # Functions. Help and Version.
 printVersion() {
-    echo '0.1.3-alpha.4'
+    echo '0.1.3-alpha.5'
 }
 printHelp() {
     title RCM TLS Plugin
