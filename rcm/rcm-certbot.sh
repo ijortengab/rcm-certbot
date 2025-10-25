@@ -72,7 +72,7 @@ Post Install:
    rcm-install(certbot-tls-plugin `printVersion` --source=certbot)
 
 Post Update:
-   rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
+   rcm-update(certbot-tls-plugin `printVersion` --source=certbot)
 
 RCM Config:
    --no-timer
