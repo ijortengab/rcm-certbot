@@ -161,7 +161,7 @@ while true; do
         "$@"
     certbot -v certonly $is_certificate_name $is_email --non-interactive --agree-tos \
         "${is_domain_array[@]}" \
-        "$@" | tee "$tempfile"
+        "$@" &> "$tempfile"
     if [[ $(head -1 "$tempfile") == "$msg" ]];then
         e Retrying...; _.
         code sleep 3
@@ -170,6 +170,12 @@ while true; do
         break
     fi
 done
+
+if [ -s "$tempfile" ];then
+    while IFS= read -r line; do
+        code "$line"
+    done < "$tempfile"
+fi
 ____
 
 [ -n "$tempfile" ] && rm "$tempfile"
