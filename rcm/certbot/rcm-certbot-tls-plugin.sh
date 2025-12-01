@@ -189,6 +189,7 @@ Rcm_certbot() {
     local table_lock=$HOME/.cache/rcm/rcm.table.cache.lock
     local cache_file=
     local do_delete_record_cache_file=
+    chapter Certbot certificates information
     _Rcm_certbot() {
         if [ -f "$table" ];then
             # todo, cek jika multiline.
@@ -263,6 +264,8 @@ Rcm_certbot() {
     touch "$table_lock"
     _Rcm_certbot
     rm "$table_lock"
+    ____
+
     if [ ! -f "$cache_file" ];then
         exit $exit_code
     fi
@@ -356,12 +359,10 @@ plugin-tls-certbot-obtain_certificate() {
     fi
     ____
 
-    chapter Mengecek certificate '`'$certificate_name'`'.
-
-    if [ -z "$tempfile" ];then
-        tempfile=$(mktemp -p /dev/shm -t rcm-ispconfig-setup-smtpd-certificate.XXXXXX)
-    fi
+    [ -z "$tempfile" ] && tempfile=$(mktemp -p /dev/shm -t rcm-certbot-tls-plugin.XXXXXX)
     Rcm_certbot 600 "certbot://${certificate_name}" > "$tempfile"
+
+    chapter Mengecek certificate '`'$certificate_name'`'.
     certificate_path=$(cat "$tempfile" | grep -i -E 'Certificate Path:\s+' | sed -E 's/Certificate Path:\s+(.*)/\1/' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
     private_key_path=$(cat "$tempfile" | grep -i -E 'Private Key Path:\s+' | sed -E 's/Private Key Path:\s+(.*)/\1/' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
     code 'certificate_path="'$certificate_path'"'
@@ -383,6 +384,7 @@ plugin-tls-certbot-obtain_certificate() {
             --domain="$fqdn" \
             --authenticator-plugin="$authenticator_plugin" \
             ; [ ! $? -eq 0 ] && x
+
         # Reload and flush the cache.
         Rcm_certbot 0 "certbot://${certificate_name}" > "$tempfile"
         certificate_path=$(cat "$tempfile" | grep -i -E 'Certificate Path:\s+' | sed -E 's/Certificate Path:\s+(.*)/\1/' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
