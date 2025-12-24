@@ -61,7 +61,7 @@ Global Options.
         Show this help.
 
 Dependency:
-   rcm:0.18.0-alpha.4
+   rcm:0.18.0-alpha.5
 
 Download:
    [rcm-certbot](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/rcm-certbot.sh)
