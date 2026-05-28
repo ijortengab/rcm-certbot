@@ -335,7 +335,7 @@ plugin-tls-certbot-obtain_certificate() {
     # Cleaning environment variable from rcm.
     [ "$certificate_name" == - ] && certificate_name=
 
-    chapter Dump variable.
+    chapter Variable dump.
     code 'fqdn="'$fqdn'"'
     code 'certificate_name="'$certificate_name'"'
     [ -z "$certificate_name" ] && certificate_name="$fqdn"

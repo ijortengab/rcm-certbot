@@ -108,7 +108,7 @@ validateApplication() {
 }
 
 # Require, validate, and populate value.
-chapter Dump variable.
+chapter Variable dump.
 ____
 
 downloadApplication snapd
