@@ -52,9 +52,6 @@ RCM_INDENT='    '; [ "$(tput cols)" -le 80 ] && RCM_INDENT='  '
 
 # Functions.
 usage() {
-    title Cerbot Obtain
-    _ 'Mode '; yellow default; _, .; _.
-    _.
     cat << EOF
 Usage: rcm-certbot-obtain [options]
 
@@ -93,8 +90,6 @@ EOF
 # Title.
 title rcm-certbot-obtain
 ____
-
-[ "$EUID" -ne 0 ] && { error This script needs to be run with superuser privileges.; x; }
 
 # Dependency.
 while IFS= read -r line; do

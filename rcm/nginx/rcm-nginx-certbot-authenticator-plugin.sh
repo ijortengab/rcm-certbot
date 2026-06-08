@@ -73,11 +73,8 @@ fi
 [[ "$verbose" -gt 1 ]] && loud=1 && louder=1
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
 
-# Functions. Help and Version.
+# Usage Functions.
 usage() {
-    title RCM Certbot Authenticator Plugin
-    _ 'Variation '; yellow Nginx; _.
-    _.
     cat << EOF
 Usage: rcm-nginx-certbot-authenticator-plugin [options]
 

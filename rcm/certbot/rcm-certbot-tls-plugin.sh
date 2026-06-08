@@ -95,11 +95,8 @@ fi
 [[ "$verbose" -gt 1 ]] && loud=1 && louder=1
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
 
-# Functions. Help and Version.
+# Usage Functions.
 usage() {
-    title RCM TLS Plugin
-    _ 'Variation '; yellow Certbot; _.
-    _.
     cat << EOF
 Usage: rcm-certbot-tls-plugin [options]
 

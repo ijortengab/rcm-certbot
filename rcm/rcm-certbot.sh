@@ -42,11 +42,8 @@ done
 set -- "${_new_arguments[@]}"
 unset _new_arguments
 
-# Functions. Help and Version.
+# Usage Functions.
 usage() {
-    title RCM Certbot
-    _ 'Variation '; yellow Default; _.
-    _.
     cat << EOF
 Usage: rcm-certbot [options]
 
