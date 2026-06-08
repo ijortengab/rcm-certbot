@@ -67,7 +67,7 @@ fi
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
 
 # Help and Version.
-[ -n "$help" ] && { usage; exit 1; }
+[ -n "$help" ] && { usage; exit 0; }
 [ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
 command-plugin() {

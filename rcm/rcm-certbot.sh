@@ -58,7 +58,7 @@ set -- "${_new_arguments[@]}"
 unset _new_arguments
 
 # Help and Version.
-[ -n "$help" ] && { usage; exit 1; }
+[ -n "$help" ] && { usage; exit 0; }
 [ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
 exit 0
