@@ -119,7 +119,6 @@ esac
 
 # Define variables and constants.
 [ -z "$fast" ] && fast="$RCM_FAST"; [ "$fast" == 0 ] && fast=
-RCM_INDENT='    '; [ "$(tput cols)" -le 80 ] && RCM_INDENT='  '
 [ -z "$fast" ] && isfast='' || isfast=' --fast'
 if [ -n "$RCM_VERBOSE" ];then
     verbose="$RCM_VERBOSE"
