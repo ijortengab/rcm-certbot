@@ -2,6 +2,40 @@
 
 RCM_EXTENSION_VERSION=0.1.3-alpha.6
 
+# Usage Functions.
+usage() {
+    cat << EOF
+Usage: rcm-certbot [options]
+
+Global Options.
+   --fast
+        No delay every subtask.
+   --version
+        Print version of this script.
+   --help
+        Show this help.
+
+Dependency:
+   rcm:0.18.0-alpha.5
+
+Download:
+   [rcm-certbot](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/rcm-certbot.sh)
+   [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
+
+Post Install:
+   rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
+   rcm-install(certbot-tls-plugin `printVersion` --source=certbot)
+
+Post Update:
+   rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
+   rcm-update(certbot-tls-plugin `printVersion` --source=certbot)
+
+RCM Config:
+   --no-timer
+   --no-confirmation
+EOF
+}
+
 # Common Functions.
 red() { echo -ne "\e[91m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
 green() { echo -ne "\e[92m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
@@ -41,40 +75,6 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${_new_arguments[@]}"
 unset _new_arguments
-
-# Usage Functions.
-usage() {
-    cat << EOF
-Usage: rcm-certbot [options]
-
-Global Options.
-   --fast
-        No delay every subtask.
-   --version
-        Print version of this script.
-   --help
-        Show this help.
-
-Dependency:
-   rcm:0.18.0-alpha.5
-
-Download:
-   [rcm-certbot](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/rcm-certbot.sh)
-   [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
-
-Post Install:
-   rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
-   rcm-install(certbot-tls-plugin `printVersion` --source=certbot)
-
-Post Update:
-   rcm-plugin(add --interface=tls --name=certbot --command=rcm-certbot-tls-plugin --version=`printVersion`)
-   rcm-update(certbot-tls-plugin `printVersion` --source=certbot)
-
-RCM Config:
-   --no-timer
-   --no-confirmation
-EOF
-}
 
 # Help and Version.
 [ -n "$help" ] && { usage; exit 1; }

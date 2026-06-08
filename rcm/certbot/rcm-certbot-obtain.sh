@@ -2,6 +2,39 @@
 
 RCM_EXTENSION_VERSION=0.1.3-alpha.6
 
+# Usage Functions.
+usage() {
+    cat << EOF
+Usage: rcm-certbot-obtain [options]
+
+Global Options.
+   --fast
+        No delay every subtask.
+   --version
+        Print version of this script.
+   --help
+        Show this help.
+
+Options:
+   --domain *
+        Set the domain. Multivalue.
+   --certificate-name
+        Use the existing certificate name that issued by Let's encrypt or set a
+        new name of certificate that to be obtained.
+        Prepopulate value from variable CERTIFICATE_NAME.
+        Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
+   --authenticator-plugin *
+        Select how to authenticate domain.
+        Values available from command: rcm-plugin(list --interface=certbot_authenticator).
+   --email
+        Email contact of certbot account.
+
+RCM Config:
+   --no-timer
+   --no-confirmation
+EOF
+}
+
 # Common Functions.
 red() { echo -ne "\e[91m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
 green() { echo -ne "\e[92m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
@@ -49,39 +82,6 @@ unset _new_arguments
 [ -z "$fast" ] && fast="$RCM_FAST"; [ "$fast" == 0 ] && fast=
 RCM_DELAY=${RCM_DELAY:=.5}; [ -n "$fast" ] && unset RCM_DELAY
 RCM_INDENT='    '; [ "$(tput cols)" -le 80 ] && RCM_INDENT='  '
-
-# Functions.
-usage() {
-    cat << EOF
-Usage: rcm-certbot-obtain [options]
-
-Global Options.
-   --fast
-        No delay every subtask.
-   --version
-        Print version of this script.
-   --help
-        Show this help.
-
-Options:
-   --domain *
-        Set the domain. Multivalue.
-   --certificate-name
-        Use the existing certificate name that issued by Let's encrypt or set a
-        new name of certificate that to be obtained.
-        Prepopulate value from variable CERTIFICATE_NAME.
-        Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
-   --authenticator-plugin *
-        Select how to authenticate domain.
-        Values available from command: rcm-plugin(list --interface=certbot_authenticator).
-   --email
-        Email contact of certbot account.
-
-RCM Config:
-   --no-timer
-   --no-confirmation
-EOF
-}
 
 # Help and Version.
 [ -n "$help" ] && { usage; exit 1; }

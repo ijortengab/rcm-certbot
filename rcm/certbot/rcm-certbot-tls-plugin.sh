@@ -2,6 +2,57 @@
 
 RCM_EXTENSION_VERSION=0.1.3-alpha.6
 
+# Usage Functions.
+usage() {
+    cat << EOF
+Usage: rcm-certbot-tls-plugin [options]
+
+Options for command prompt:
+   --certbot-certificate-name
+        Use the existing certificate name that issued by Let's encrypt or set a
+        new name of certificate that to be obtained.
+        Prepopulate value from variable CERTBOT_CERTIFICATE_NAME.
+        Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
+   --certbot-authenticator-plugin *
+        Select how to authenticate domain.
+        Values available from command: rcm-plugin(list --interface=certbot_authenticator).
+        Prepopulate value from variable CERTBOT_AUTHENTICATOR_PLUGIN.
+
+Global Options.
+   --fast
+        No delay every subtask.
+   --version
+        Print version of this script.
+   --help
+        Show this help.
+
+Download:
+   [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
+   [rcm-certbot-apt](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-apt.sh)
+   [rcm-certbot-obtain](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-obtain.sh)
+   [rcm-nginx-certbot-authenticator-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/nginx/rcm-nginx-certbot-authenticator-plugin.sh)
+
+Dependency:
+   rcm-certbot-apt:`printVersion`
+   rcm-certbot-obtain:`printVersion`
+
+Pre Prompt:
+   rcm-plugin(init --interface=certbot_authenticator)
+
+Post Install:
+   rcm-plugin(add --interface=certbot_authenticator --name=nginx --command=rcm-nginx-certbot-authenticator-plugin --version=`printVersion`)
+   rcm-install(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
+
+Post Update:
+   rcm-plugin(add --interface=certbot_authenticator --name=nginx --command=rcm-nginx-certbot-authenticator-plugin --version=`printVersion`)
+   rcm-update(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
+
+RCM Config:
+   --no-timer
+   --no-confirmation
+EOF
+}
+
 # Common Functions.
 red() { echo -ne "\e[91m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
 green() { echo -ne "\e[92m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
@@ -94,57 +145,6 @@ fi
 [[ "$verbose" -gt 0 ]] && loud=1
 [[ "$verbose" -gt 1 ]] && loud=1 && louder=1
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
-
-# Usage Functions.
-usage() {
-    cat << EOF
-Usage: rcm-certbot-tls-plugin [options]
-
-Options for command prompt:
-   --certbot-certificate-name
-        Use the existing certificate name that issued by Let's encrypt or set a
-        new name of certificate that to be obtained.
-        Prepopulate value from variable CERTBOT_CERTIFICATE_NAME.
-        Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
-   --certbot-authenticator-plugin *
-        Select how to authenticate domain.
-        Values available from command: rcm-plugin(list --interface=certbot_authenticator).
-        Prepopulate value from variable CERTBOT_AUTHENTICATOR_PLUGIN.
-
-Global Options.
-   --fast
-        No delay every subtask.
-   --version
-        Print version of this script.
-   --help
-        Show this help.
-
-Download:
-   [rcm-certbot-tls-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-tls-plugin.sh)
-   [rcm-certbot-apt](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-apt.sh)
-   [rcm-certbot-obtain](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/certbot/rcm-certbot-obtain.sh)
-   [rcm-nginx-certbot-authenticator-plugin](https://github.com/ijortengab/rcm-certbot/raw/master/rcm/nginx/rcm-nginx-certbot-authenticator-plugin.sh)
-
-Dependency:
-   rcm-certbot-apt:`printVersion`
-   rcm-certbot-obtain:`printVersion`
-
-Pre Prompt:
-   rcm-plugin(init --interface=certbot_authenticator)
-
-Post Install:
-   rcm-plugin(add --interface=certbot_authenticator --name=nginx --command=rcm-nginx-certbot-authenticator-plugin --version=`printVersion`)
-   rcm-install(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
-
-Post Update:
-   rcm-plugin(add --interface=certbot_authenticator --name=nginx --command=rcm-nginx-certbot-authenticator-plugin --version=`printVersion`)
-   rcm-update(nginx-certbot-authenticator-plugin `printVersion` --source=certbot-tls-plugin)
-
-RCM Config:
-   --no-timer
-   --no-confirmation
-EOF
-}
 
 # Help and Version.
 [ -n "$help" ] && { usage; exit 1; }

@@ -2,6 +2,22 @@
 
 RCM_EXTENSION_VERSION=0.1.3-alpha.6
 
+# Usage Functions.
+usage() {
+    cat << EOF
+Usage: rcm-nginx-certbot-authenticator-plugin [options]
+
+Global Options.
+   --fast
+        No delay every subtask.
+   --version
+        Print version of this script.
+   --help
+        Show this help.
+
+EOF
+}
+
 # Common Functions.
 red() { echo -ne "\e[91m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
 green() { echo -ne "\e[92m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
@@ -72,22 +88,6 @@ fi
 [[ "$verbose" -gt 0 ]] && loud=1
 [[ "$verbose" -gt 1 ]] && loud=1 && louder=1
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
-
-# Usage Functions.
-usage() {
-    cat << EOF
-Usage: rcm-nginx-certbot-authenticator-plugin [options]
-
-Global Options.
-   --fast
-        No delay every subtask.
-   --version
-        Print version of this script.
-   --help
-        Show this help.
-
-EOF
-}
 
 # Help and Version.
 [ -n "$help" ] && { usage; exit 1; }
