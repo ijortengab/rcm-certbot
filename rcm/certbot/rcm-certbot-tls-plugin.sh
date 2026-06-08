@@ -19,8 +19,6 @@ Options for command prompt:
         Prepopulate value from variable CERTBOT_AUTHENTICATOR_PLUGIN.
 
 Global Options.
-   --fast
-        No delay every subtask.
    --version
         Print version of this script.
    --help
@@ -62,7 +60,6 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --help) help=1; shift ;;
         --version) version=1; shift ;;
-        --fast) fast=1; shift ;;
         --) shift
             while [[ $# -gt 0 ]]; do
                 case "$1" in
@@ -108,7 +105,6 @@ case "$command" in
                 --certbot-certificate-name) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then certbot_certificate_name="$2"; shift; fi; shift ;;
                 --certbot-authenticator-plugin=*) certbot_authenticator_plugin="${1#*=}"; shift ;;
                 --certbot-authenticator-plugin) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then certbot_authenticator_plugin="$2"; shift; fi; shift ;;
-                --fast) fast=1; shift ;;
                 --[^-]*) shift ;;
                 *) _new_arguments+=("$1"); shift ;;
             esac
@@ -118,8 +114,6 @@ case "$command" in
 esac
 
 # Define variables and constants.
-[ -z "$fast" ] && fast="$RCM_FAST"; [ "$fast" == 0 ] && fast=
-[ -z "$fast" ] && isfast='' || isfast=' --fast'
 if [ -n "$RCM_VERBOSE" ];then
     verbose="$RCM_VERBOSE"
 fi
@@ -261,7 +255,7 @@ command-prompt() {
     # todo error.
     echo 'CERTBOT_AUTHENTICATOR_PLUGIN='"$certbot_authenticator_plugin"
     INDENT+='    '
-    rcm-plugin $isfast execute --interface=certbot_authenticator --name="$certbot_authenticator_plugin" \
+    rcm-plugin execute --interface=certbot_authenticator --name="$certbot_authenticator_plugin" \
         --method='prompt' \
         ; [ ! $? -eq 0 ] && x
     read -ra array -d '' <<< "$RCM_ENVIRONMENT_VARIABLES"
@@ -288,7 +282,7 @@ plugin-tls-certbot-prompt() {
 }
 plugin-tls-certbot-server_setup_post() {
     INDENT+='    ' \
-    rcm-certbot-apt $isfast \
+    rcm-certbot-apt \
     ; [ ! $? -eq 0 ] && x
 
     # If not set in argument, try load from environment.
@@ -296,7 +290,7 @@ plugin-tls-certbot-server_setup_post() {
 
     # Cleaning environment variable from rcm.
     INDENT+='    ' \
-    rcm-plugin $isfast execute --interface=certbot_authenticator --name="$certbot_authenticator_plugin" --method='install' --ignore-fail-on-empty-name \
+    rcm-plugin execute --interface=certbot_authenticator --name="$certbot_authenticator_plugin" --method='install' --ignore-fail-on-empty-name \
     ; [ ! $? -eq 0 ] && x
 }
 plugin-tls-certbot-obtain_certificate() {
@@ -356,7 +350,7 @@ plugin-tls-certbot-obtain_certificate() {
 
     if [[ "$binary" =~ 0 ]];then
         INDENT+='    ' \
-        rcm-certbot-obtain $isfast \
+        rcm-certbot-obtain \
             --certificate-name="$certificate_name" \
             --domain="$fqdn" \
             --authenticator-plugin="$authenticator_plugin" \
@@ -457,7 +451,6 @@ exit 0
 # INCREMENT=(
 # )
 # FLAG=(
-# --fast
 # --version
 # --help
 # )
@@ -485,7 +478,6 @@ exit 0
 # --no-error-invalid-options \
 # --no-error-require-arguments << EOF | clip
 # FLAG=(
-# --fast
 # --version
 # --help
 # )

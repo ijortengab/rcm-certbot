@@ -8,8 +8,6 @@ usage() {
 Usage: rcm-nginx-certbot-authenticator-plugin [options]
 
 Global Options.
-   --fast
-        No delay every subtask.
    --version
         Print version of this script.
    --help
@@ -27,7 +25,6 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --help) help=1; shift ;;
         --version) version=1; shift ;;
-        --fast) fast=1; shift ;;
         --) shift
             while [[ $# -gt 0 ]]; do
                 case "$1" in
@@ -61,8 +58,6 @@ if [ -n "$1" ];then
 fi
 
 # Define variables and constants.
-[ -z "$fast" ] && fast="$RCM_FAST"; [ "$fast" == 0 ] && fast=
-[ -z "$fast" ] && isfast='' || isfast=' --fast'
 if [ -n "$RCM_VERBOSE" ];then
     verbose="$RCM_VERBOSE"
 fi
@@ -125,7 +120,6 @@ exit 0
 # INCREMENT=(
 # )
 # FLAG=(
-# --fast
 # --version
 # --help
 # )

@@ -8,8 +8,6 @@ usage() {
 Usage: rcm-certbot-obtain [options]
 
 Global Options.
-   --fast
-        No delay every subtask.
    --version
         Print version of this script.
    --help
@@ -52,7 +50,6 @@ while [[ $# -gt 0 ]]; do
         --domain) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then domain+=("$2"); shift; fi; shift ;;
         --email=*) email="${1#*=}"; shift ;;
         --email) if [[ ! $2 == "" && ! $2 =~ (^--$|^-[^-]|^--[^-]) ]]; then email="$2"; shift; fi; shift ;;
-        --fast) fast=1; shift ;;
         --[^-]*) shift ;;
         *) _new_arguments+=("$1"); shift ;;
     esac
@@ -61,7 +58,6 @@ set -- "${_new_arguments[@]}"
 unset _new_arguments
 
 # Define variables and constants.
-[ -z "$fast" ] && fast="$RCM_FAST"; [ "$fast" == 0 ] && fast=
 
 # Help and Version.
 [ -n "$help" ] && { usage; exit 1; }
@@ -78,7 +74,6 @@ done <<< `usage 2>/dev/null | sed -n '/^Dependency:/,$p' | sed -n '2,/^\s*$/p' |
 
 # Require, validate, and populate value.
 chapter Variable dump.
-[ -n "$fast" ] && isfast=' --fast' || isfast=''
 if [[ "${#domain[@]}" -eq 0 ]];then
     error Argument --domain is required.; x
 fi
@@ -165,7 +160,6 @@ exit 0
 # --no-error-invalid-options \
 # --no-error-require-arguments << EOF | clip
 # FLAG=(
-# --fast
 # --version
 # --help
 # )
