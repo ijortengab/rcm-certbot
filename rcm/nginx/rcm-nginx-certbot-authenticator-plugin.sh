@@ -1,5 +1,7 @@
 #!/bin/bash
 
+RCM_EXTENSION_VERSION=0.1.3-alpha.6
+
 # Common Functions.
 red() { echo -ne "\e[91m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
 green() { echo -ne "\e[92m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
@@ -72,13 +74,9 @@ fi
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
 
 # Functions. Help and Version.
-printVersion() {
-    echo '0.1.3-alpha.6'
-}
 printHelp() {
     title RCM Certbot Authenticator Plugin
     _ 'Variation '; yellow Nginx; _.
-    _ 'Version '; yellow `printVersion`; _.
     _.
     cat << EOF
 Usage: rcm-nginx-certbot-authenticator-plugin [options]
@@ -96,7 +94,7 @@ EOF
 
 # Help and Version.
 [ -n "$help" ] && { printHelp; exit 1; }
-[ -n "$version" ] && { printVersion; exit 1; }
+[ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
 command-plugin() {
     local interface=$1 name=$2 method=$3

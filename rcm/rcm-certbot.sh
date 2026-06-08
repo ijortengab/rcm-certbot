@@ -1,5 +1,7 @@
 #!/bin/bash
 
+RCM_EXTENSION_VERSION=0.1.3-alpha.6
+
 # Common Functions.
 red() { echo -ne "\e[91m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
 green() { echo -ne "\e[92m" >&2; echo -n "$@" >&2; echo -ne "\e[39m" >&2; }
@@ -41,13 +43,9 @@ set -- "${_new_arguments[@]}"
 unset _new_arguments
 
 # Functions. Help and Version.
-printVersion() {
-    echo '0.1.3-alpha.6'
-}
 printHelp() {
     title RCM Certbot
     _ 'Variation '; yellow Default; _.
-    _ 'Version '; yellow `printVersion`; _.
     _.
     cat << EOF
 Usage: rcm-certbot [options]
@@ -83,7 +81,7 @@ EOF
 
 # Help and Version.
 [ -n "$help" ] && { printHelp; exit 1; }
-[ -n "$version" ] && { printVersion; exit 1; }
+[ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
 exit 0
 
