@@ -4,8 +4,8 @@ RCM_EXTENSION_VERSION=0.1.3-alpha.6
 
 # Usage Functions.
 usage() {
-    cat << 'EOF'
-Usage: rcm-certbot-apt [options]
+    cat << EOF
+Usage: rcm certbot init
 
 Global Options:
    --version
@@ -37,51 +37,16 @@ unset _new_arguments
 [ -n "$help" ] && { usage; exit 0; }
 [ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
+# Require.
+require vendor/ijortengab/rcm/functions/utility/apt-install.sh
+
 # ------------------------------------------------------------------------------
 
 # Title.
-title rcm-certbot-apt
+title rcm certbot init
 ____
 
-# Functions.
-downloadApplication() {
-    local aptnotfound=
-    chapter Melakukan instalasi aplikasi.
-    code apt install "$@"
-    [ -z "$aptinstalled" ] && aptinstalled=$(apt --installed list 2>/dev/null)
-    for i in "$@"; do
-        if ! grep -q "^$i/" <<< "$aptinstalled";then
-            aptnotfound+=" $i"
-        fi
-    done
-    if [ -n "$aptnotfound" ];then
-        __ Menginstal.
-        code apt install -y"$aptnotfound"
-        apt install -y --no-install-recommends $aptnotfound
-        aptinstalled=$(apt --installed list 2>/dev/null)
-    else
-        __ Aplikasi sudah terinstall seluruhnya.
-    fi
-}
-validateApplication() {
-    local aptnotfound=
-    for i in "$@"; do
-        if ! grep -q "^$i/" <<< "$aptinstalled";then
-            aptnotfound+=" $i"
-        fi
-    done
-    if [ -n "$aptnotfound" ];then
-        __; red Gagal menginstall aplikasi:"$aptnotfound"; x
-    fi
-}
-
-# Require, validate, and populate value.
-chapter Variable dump.
-____
-
-downloadApplication snapd
-validateApplication snapd
-____
+apt-install snapd
 
 command -v "snap" >/dev/null || {
     [ -f /etc/profile.d/apps-bin-path.sh ] && . /etc/profile.d/apps-bin-path.sh
