@@ -74,7 +74,7 @@ fi
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
 
 # Functions. Help and Version.
-printHelp() {
+usage() {
     title RCM Certbot Authenticator Plugin
     _ 'Variation '; yellow Nginx; _.
     _.
@@ -93,7 +93,7 @@ EOF
 }
 
 # Help and Version.
-[ -n "$help" ] && { printHelp; exit 1; }
+[ -n "$help" ] && { usage; exit 1; }
 [ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
 command-plugin() {
@@ -129,7 +129,7 @@ if [ -n "$command" ];then
     fi
 fi
 
-printHelp >/dev/null | head -3
+usage >/dev/null | head -3
 _ Try; blue ' 'rcm-nginx-certbot-authenticator-plugin; magenta ' '--help; _, ' 'for more information.; _.
 
 exit 0

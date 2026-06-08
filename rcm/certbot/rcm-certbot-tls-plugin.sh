@@ -96,7 +96,7 @@ fi
 [[ "$verbose" -gt 2 ]] && loud=1 && louder=1 && debug=1
 
 # Functions. Help and Version.
-printHelp() {
+usage() {
     title RCM TLS Plugin
     _ 'Variation '; yellow Certbot; _.
     _.
@@ -150,7 +150,7 @@ EOF
 }
 
 # Help and Version.
-[ -n "$help" ] && { printHelp; exit 1; }
+[ -n "$help" ] && { usage; exit 1; }
 [ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
 isFileExists() {
