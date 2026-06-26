@@ -7,25 +7,29 @@ usage() {
     cat << EOF
 Usage: rcm-certbot-obtain [options]
 
+Options:
+   --domain=[DOMAIN]...
+        Set the domain.
+   --authenticator-plugin=PLUGIN
+        Select how to authenticate domain.
+        Values available from command: rcm(plugin list certbot/authenticator).
+   --certificate-name=[NAME]
+        Use the existing certificate name that issued by Let's encrypt or set a
+        new name of certificate that to be obtained.
+        Prepopulate value from variable CERTIFICATE_NAME.
+        Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
+   --email=[EMAIL]
+        Email contact of certbot account.
+
+Additional Options:
+   rcm(-p plugin prompt certbot/authenticator [--authenticator-plugin] is-domain-exists)
+   rcm(-p plugin prompt certbot/authenticator [--authenticator-plugin] append-arguments)
+
 Global Options.
    --version
         Print version of this script.
    --help
         Show this help.
-
-Options:
-   --domain *
-        Set the domain. Multivalue.
-   --certificate-name
-        Use the existing certificate name that issued by Let's encrypt or set a
-        new name of certificate that to be obtained.
-        Prepopulate value from variable CERTIFICATE_NAME.
-        Left blank will use auto set by certbot, usually the FQDN (with an integer suffix in case of conflict).
-   --authenticator-plugin *
-        Select how to authenticate domain.
-        Values available from command: rcm-plugin(list --interface=certbot_authenticator).
-   --email
-        Email contact of certbot account.
 
 RCM Config:
    --no-timer
@@ -66,7 +70,7 @@ unset _new_arguments
 # ------------------------------------------------------------------------------
 
 # Title.
-title rcm-certbot-obtain
+title rcm certbot obtain
 ____
 
 # Require, validate, and populate value.
@@ -90,34 +94,27 @@ code 'certificate_name="'$certificate_name'"'
 [ -n "$certificate_name" ] && is_certificate_name=" --cert-name=${certificate_name}" || is_certificate_name=
 [ -n "$email" ] && is_email=" --email=${email}" || is_email=
 code 'email="'$email'"'
-code 'authenticator_plugin="'$authenticator_plugin'"'
-# Cleaning environment variable from rcm.
-[ "$authenticator_plugin" == - ] && authenticator_plugin=
+if [ -z "$authenticator_plugin" ];then
+    error Argument --authenticator-plugin is required.; x
+fi
 code 'authenticator_plugin="'$authenticator_plugin'"'
 tempfile=
 ____
 
-append_arguments=()
-[ -z "$tempfile" ] && tempfile=$(mktemp -p /dev/shm -t rcm-certbot-obtain.XXXXXX)
-INDENT+='    ' \
-rcm-plugin $isfast execute --interface=certbot_authenticator --name="$authenticator_plugin" \
-    --method='append_arguments' \
-    --output-file="$tempfile" \
-    ; [ ! $? -eq 0 ] && x
-if [ -s "$tempfile" ];then
-    while IFS= read -r line; do
-        append_arguments+=("$line")
-    done < "$tempfile"
-fi
+RCM_FQDN="$domain"
+include `rcm plugin run-method certbot/authenticator $authenticator_plugin is-domain-exists`
+
+RCM_CERTBOT_ARGUMENTS=()
+include `rcm plugin run-method certbot/authenticator $authenticator_plugin append-arguments`
 
 chapter Obtain Certificate.
 if [ -z "$tempfile" ];then
-    tempfile=$(mktemp -p /dev/shm -t rcm-certbot-obtain-authenticator-digitalocean.XXXXXX)
+    tempfile=$(mktemp -p /dev/shm -t rcm-certbot-obtain.XXXXXX)
 fi
 # https://eff-certbot.readthedocs.io/en/latest/using.html#combination
 msg='Another instance of Certbot is already running.'
-if [ "${#append_arguments[@]}" -gt 0 ];then
-    set -- "${append_arguments[@]}"
+if [ "${#RCM_CERTBOT_ARGUMENTS[@]}" -gt 0 ];then
+    set -- "${RCM_CERTBOT_ARGUMENTS[@]}"
 fi
 unset append_arguments
 while true; do
@@ -138,7 +135,7 @@ done
 
 if [ -s "$tempfile" ];then
     while IFS= read -r line; do
-        code "$line"
+        e "$line"; _.
     done < "$tempfile"
 fi
 ____
