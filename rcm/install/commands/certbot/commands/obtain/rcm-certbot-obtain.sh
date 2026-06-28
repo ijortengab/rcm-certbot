@@ -22,6 +22,7 @@ Options:
         Email contact of certbot account.
 
 Additional Options:
+   rcm(-p plugin prompt certbot/authenticator [--authenticator-plugin] init)
    rcm(-p plugin prompt certbot/authenticator [--authenticator-plugin] is-domain-exists)
    rcm(-p plugin prompt certbot/authenticator [--authenticator-plugin] append-arguments)
 
@@ -67,6 +68,9 @@ unset _new_arguments
 [ -n "$help" ] && { usage; exit 0; }
 [ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
 
+require vendor/ijortengab/rcm/functions/base/array.sh
+require vendor/ijortengab/rcm/functions/classes/rcm-yaml.sh
+
 # ------------------------------------------------------------------------------
 
 # Title.
@@ -75,9 +79,6 @@ ____
 
 # Require, validate, and populate value.
 chapter Variable dump.
-if [[ "${#domain[@]}" -eq 0 ]];then
-    error Argument --domain is required.; x
-fi
 is_domain_array=()
 e; magenta 'domain=('
 first=1
@@ -94,12 +95,17 @@ code 'certificate_name="'$certificate_name'"'
 [ -n "$certificate_name" ] && is_certificate_name=" --cert-name=${certificate_name}" || is_certificate_name=
 [ -n "$email" ] && is_email=" --email=${email}" || is_email=
 code 'email="'$email'"'
+code 'authenticator_plugin="'$authenticator_plugin'"'
+if [[ "${#domain[@]}" -eq 0 ]];then
+    error Argument --domain is required.; x
+fi
 if [ -z "$authenticator_plugin" ];then
     error Argument --authenticator-plugin is required.; x
 fi
-code 'authenticator_plugin="'$authenticator_plugin'"'
 tempfile=
 ____
+
+include `rcm plugin run-method certbot/authenticator $authenticator_plugin init`
 
 RCM_FQDN="$domain"
 include `rcm plugin run-method certbot/authenticator $authenticator_plugin is-domain-exists`
