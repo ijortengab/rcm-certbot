@@ -77,6 +77,9 @@ require vendor/ijortengab/rcm/functions/classes/rcm-yaml.sh
 title rcm certbot obtain
 ____
 
+# Dependency.
+require command certbot
+
 # Require, validate, and populate value.
 chapter Variable dump.
 is_domain_array=()
