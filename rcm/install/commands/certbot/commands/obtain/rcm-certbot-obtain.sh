@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Define variables and constants.
 RCM_EXTENSION_VERSION=0.2.0-alpha.3
 
 # Usage Functions.
@@ -62,14 +63,9 @@ done
 set -- "${_new_arguments[@]}"
 unset _new_arguments
 
-# Define variables and constants.
-
 # Help and Version.
 [ -n "$help" ] && { usage; exit 0; }
 [ -n "$version" ] && { e $RCM_EXTENSION_VERSION; x; }
-
-require vendor/ijortengab/rcm/functions/base/array.sh
-require vendor/ijortengab/rcm/functions/classes/rcm-yaml.sh
 
 # ------------------------------------------------------------------------------
 
@@ -79,6 +75,8 @@ ____
 
 # Dependency.
 require command certbot
+require vendor/ijortengab/rcm/functions/base/array.sh
+require vendor/ijortengab/rcm/functions/classes/rcm-yaml.sh
 
 # Require, validate, and populate value.
 chapter Variable dump.
